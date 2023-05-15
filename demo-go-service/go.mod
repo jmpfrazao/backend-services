@@ -1,4 +1,4 @@
-module demo-service
+module demo-go-service
 
 go 1.20
 
