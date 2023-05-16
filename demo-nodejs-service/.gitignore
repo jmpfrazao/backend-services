@@ -1,0 +1,11 @@
+.DS_Store
+.env*
+.idea
+.vscode
+*.log
+
+.jest
+*.psql
+dist
+node_modules
+package-lock.json
