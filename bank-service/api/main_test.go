@@ -1,4 +1,4 @@
-package database
+package api
 
 import (
 	"database/sql"
@@ -6,10 +6,11 @@ import (
 	"os"
 	"testing"
 
+	database "github.com/jmpfrazao/backend-services/bank-service/database/sqlc"
 	_ "github.com/lib/pq"
 )
 
-var testQueries *Queries
+var testQueries *database.Queries
 var testDB *sql.DB
 
 const (
@@ -27,7 +28,7 @@ func TestMain(m *testing.M) {
 		log.Fatal("Cannot connect to payment database ")
 	}
 
-	testQueries = New(testDB)
+	testQueries = database.New(testDB)
 
 	os.Exit(m.Run())
 }

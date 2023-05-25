@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	database "github.com/jmpfrazao/backend-services/bank-service/database/sqlc"
 )
@@ -90,7 +91,10 @@ func (repository *Repository) TransferTx(ctx context.Context, arg TransferTxPara
 			return err
 		}
 
+		log.Println("HERE1")
 		if arg.FromAccountID < arg.ToAccountID {
+			log.Println("HERE2")
+
 			result.FromAccount, result.ToAccount, err = repository.addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
 
 			if err != nil {
@@ -98,20 +102,21 @@ func (repository *Repository) TransferTx(ctx context.Context, arg TransferTxPara
 			}
 
 		} else {
+			log.Println("HERE3")
 			result.ToAccount, result.FromAccount, err = repository.addMoney(ctx, q, arg.ToAccountID, arg.Amount, arg.FromAccountID, -arg.Amount)
 
 			if err != nil {
 				return err
 			}
 		}
-
+		log.Println("HERE 4")
 		return nil
 	})
 
 	return result, err
 }
 
-func (repository *Repository) addMoney(ctx context.Context, q *database.Queries, account1ID, account2ID, account1Amount, account2Amount int64) (account1, account2 database.Account, err error) {
+func (repository *Repository) addMoney(ctx context.Context, q *database.Queries, account1ID, account1Amount, account2ID, account2Amount int64) (account1, account2 database.Account, err error) {
 	account1, err = q.AddAccountBalance(ctx, database.AddAccountBalanceParams{
 		ID:     account1ID,
 		Amount: account1Amount,

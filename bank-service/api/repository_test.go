@@ -2,37 +2,13 @@ package api
 
 import (
 	"context"
-	"database/sql"
 	"log"
-	"os"
 	"testing"
 
 	database "github.com/jmpfrazao/backend-services/bank-service/database/sqlc"
 	"github.com/jmpfrazao/backend-services/bank-service/utils"
 	"github.com/stretchr/testify/require"
 )
-
-var testQueries *database.Queries
-var testDB *sql.DB
-
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
-)
-
-func TestMain(m *testing.M) {
-	var err error
-
-	testDB, err = sql.Open(dbDriver, dbSource)
-
-	if err != nil {
-		log.Fatal("Cannot connect to payment database")
-	}
-
-	testQueries = database.New(testDB)
-
-	os.Exit(m.Run())
-}
 
 func CreateRandomAccount(t *testing.T) database.Account {
 	arg := database.CreateAccountParams{
@@ -78,6 +54,7 @@ func TestTransferTx(t *testing.T) {
 				Amount:        amount,
 			})
 
+			log.Println(err)
 			errs <- err
 			results <- result
 		}()
