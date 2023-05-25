@@ -1,17 +1,66 @@
-package paymentdatabase
+package api
 
 import (
 	"context"
+	"database/sql"
+	"log"
+	"os"
 	"testing"
 
+	database "github.com/jmpfrazao/backend-services/bank-service/database/sqlc"
+	"github.com/jmpfrazao/backend-services/bank-service/utils"
 	"github.com/stretchr/testify/require"
 )
 
-func TestTransferTx(t *testing.T) {
-	store := NewStore(testDB)
+var testQueries *database.Queries
+var testDB *sql.DB
 
-	account1 := createRandomAccount(t)
-	account2 := createRandomAccount(t)
+const (
+	dbDriver = "postgres"
+	dbSource = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
+)
+
+func TestMain(m *testing.M) {
+	var err error
+
+	testDB, err = sql.Open(dbDriver, dbSource)
+
+	if err != nil {
+		log.Fatal("Cannot connect to payment database")
+	}
+
+	testQueries = database.New(testDB)
+
+	os.Exit(m.Run())
+}
+
+func CreateRandomAccount(t *testing.T) database.Account {
+	arg := database.CreateAccountParams{
+		Owner:    utils.RandomOwnerName(),
+		Balance:  utils.RandomMoney(),
+		Currency: utils.RandomCurrency(),
+	}
+
+	account, err := testQueries.CreateAccount(context.Background(), arg)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, account)
+
+	require.Equal(t, arg.Balance, account.Balance)
+	require.Equal(t, arg.Currency, account.Currency)
+
+	require.NotZero(t, account.ID)
+	require.NotZero(t, account.CreatedAt)
+
+	return account
+}
+
+func TestTransferTx(t *testing.T) {
+
+	repository := NewRepository(testDB)
+
+	account1 := CreateRandomAccount(t)
+	account2 := CreateRandomAccount(t)
 
 	// run n concurrent transfer transactions
 	n := 5
@@ -23,7 +72,7 @@ func TestTransferTx(t *testing.T) {
 	for i := 0; i < n; i++ {
 
 		go func() {
-			result, err := store.TransferTx(context.Background(), TransferTxParams{
+			result, err := repository.TransferTx(context.Background(), TransferTxParams{
 				FromAccountID: account1.ID,
 				ToAccountID:   account2.ID,
 				Amount:        amount,
@@ -52,7 +101,7 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, transfer.ID)
 		require.NotZero(t, transfer.CreatedAt)
 
-		_, err = store.GetTransfer(context.Background(), transfer.ID)
+		_, err = repository.GetTransfer(context.Background(), transfer.ID)
 		require.NoError(t, err)
 
 		// check entries
@@ -63,7 +112,7 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, account1.ID)
 		require.NotZero(t, account1.CreatedAt)
 
-		_, err = store.GetEntry(context.Background(), fromEntry.ID)
+		_, err = repository.GetEntry(context.Background(), fromEntry.ID)
 		require.NoError(t, err)
 
 		toEntry := result.ToEntry
@@ -73,7 +122,7 @@ func TestTransferTx(t *testing.T) {
 		require.NotZero(t, account2.ID)
 		require.NotZero(t, account2.CreatedAt)
 
-		_, err = store.GetEntry(context.Background(), toEntry.ID)
+		_, err = repository.GetEntry(context.Background(), toEntry.ID)
 		require.NoError(t, err)
 
 		// check account
@@ -109,10 +158,10 @@ func TestTransferTx(t *testing.T) {
 }
 
 func TestTransferDeadlock(t *testing.T) {
-	store := NewStore(testDB)
+	repository := NewRepository(testDB)
 
-	account1 := createRandomAccount(t)
-	account2 := createRandomAccount(t)
+	account1 := CreateRandomAccount(t)
+	account2 := CreateRandomAccount(t)
 
 	// run n concurrent transfer transactions
 	n := 10
@@ -130,7 +179,7 @@ func TestTransferDeadlock(t *testing.T) {
 		}
 
 		go func() {
-			_, err := store.TransferTx(context.Background(), TransferTxParams{
+			_, err := repository.TransferTx(context.Background(), TransferTxParams{
 				FromAccountID: fromAccountId,
 				ToAccountID:   toAccountId,
 				Amount:        amount,

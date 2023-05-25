@@ -1,4 +1,4 @@
-package paymentdatabase
+package database
 
 import (
 	"database/sql"

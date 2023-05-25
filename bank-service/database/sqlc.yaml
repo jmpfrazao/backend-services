@@ -6,7 +6,7 @@ cloud:
 project:
     id: ""
 packages:
-  - name: "paymentdatabase"
+  - name: "database"
     path: "./sqlc"
     queries: "./queries"
     schema: "./migrations"

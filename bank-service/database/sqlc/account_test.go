@@ -1,4 +1,4 @@
-package paymentdatabase
+package database
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomAccount(t *testing.T) Account {
+func CreateRandomAccount(t *testing.T) Account {
 	arg := CreateAccountParams{
 		Owner:    utils.RandomOwnerName(),
 		Balance:  utils.RandomMoney(),
@@ -31,11 +31,11 @@ func createRandomAccount(t *testing.T) Account {
 }
 
 func TestCreateAccount(t *testing.T) {
-	createRandomAccount(t)
+	CreateRandomAccount(t)
 }
 
 func TestGetAccount(t *testing.T) {
-	account := createRandomAccount(t)
+	account := CreateRandomAccount(t)
 	accountById, err := testQueries.GetAccount(context.Background(), account.ID)
 
 	require.NoError(t, err)
@@ -48,7 +48,7 @@ func TestGetAccount(t *testing.T) {
 }
 
 func TestUpdateAccount(t *testing.T) {
-	account := createRandomAccount(t)
+	account := CreateRandomAccount(t)
 
 	arg := UpdateAccountParams{
 		ID:      account.ID,
@@ -67,7 +67,7 @@ func TestUpdateAccount(t *testing.T) {
 }
 
 func TestDeleteAccount(t *testing.T) {
-	account := createRandomAccount(t)
+	account := CreateRandomAccount(t)
 
 	err := testQueries.DeleteAccount(context.Background(), account.ID)
 
@@ -82,7 +82,7 @@ func TestDeleteAccount(t *testing.T) {
 
 func TestListAccounts(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		createRandomAccount(t)
+		CreateRandomAccount(t)
 	}
 
 	arg := ListAccountsParams{
