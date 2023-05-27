@@ -6,8 +6,8 @@ cloud:
 project:
     id: ""
 packages:
-  - name: "database"
-    path: "./sqlc"
+  - name: "models"
+    path: "./models"
     queries: "./queries"
     schema: "./migrations"
     engine: "postgresql"
