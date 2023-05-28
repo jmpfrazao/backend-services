@@ -6,11 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmpfrazao/backend-services/bank-service/api/errors"
 	"github.com/jmpfrazao/backend-services/bank-service/database"
+	dberrors "github.com/jmpfrazao/backend-services/bank-service/database/errors"
 	models "github.com/jmpfrazao/backend-services/bank-service/database/models"
 )
 
 type IAccountService interface {
 	CreateAccount(ctx *gin.Context, req CreateAccountRequest)
+	GetAccountByID(ctx *gin.Context, req GetAccountByIDRequest)
 }
 
 type AccountService struct {
@@ -31,6 +33,23 @@ func (s *AccountService) CreateAccount(ctx *gin.Context, req CreateAccountReques
 	}
 
 	account, err := s.accountRepository.Main.CreateAccount(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errors.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, account)
+}
+
+func (s *AccountService) GetAccountByID(ctx *gin.Context, req GetAccountByIDRequest) {
+
+	account, err := s.accountRepository.Main.GetAccount(ctx, req.ID)
+
+	if dberrors.IsEmptyQueryResult(err) {
+		ctx.JSON(http.StatusNotFound, errors.ErrorResponse(err))
+		return
+	}
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errors.ErrorResponse(err))
 		return

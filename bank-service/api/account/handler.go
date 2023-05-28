@@ -17,6 +17,7 @@ func RegisterHandlers(router *gin.RouterGroup, accountService IAccountService) {
 		accountService: accountService,
 	}
 	router.POST("/accounts", h.CreateAccount)
+	router.GET("/accounts/:id", h.GetAccountById)
 
 }
 
@@ -29,4 +30,15 @@ func (h AccountHandler) CreateAccount(ctx *gin.Context) {
 
 	// pass view response
 	h.accountService.CreateAccount(ctx, req)
+}
+
+func (h AccountHandler) GetAccountById(ctx *gin.Context) {
+	var req GetAccountByIDRequest
+
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadGateway, errors.ErrorResponse(err))
+		return
+	}
+	// pass view response
+	h.accountService.GetAccountByID(ctx, req)
 }
