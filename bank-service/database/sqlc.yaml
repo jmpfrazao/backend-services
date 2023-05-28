@@ -15,5 +15,6 @@ packages:
     emit_prepared_queries: false
     emit_interface: false
     emit_exact_table_names: false
+    emit_empty_slices: true
     output_db_file_name: "main.go"
     output_models_file_name: "models.go"
