@@ -13,6 +13,7 @@ import (
 type IAccountService interface {
 	CreateAccount(ctx *gin.Context, req CreateAccountRequest)
 	GetAccountByID(ctx *gin.Context, req GetAccountByIDRequest)
+	ListAccounts(ctx *gin.Context, req ListAccountsRequest)
 }
 
 type AccountService struct {
@@ -49,6 +50,22 @@ func (s *AccountService) GetAccountByID(ctx *gin.Context, req GetAccountByIDRequ
 		ctx.JSON(http.StatusNotFound, errors.ErrorResponse(err))
 		return
 	}
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errors.ErrorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, account)
+}
+
+func (s *AccountService) ListAccounts(ctx *gin.Context, req ListAccountsRequest) {
+
+	arg := models.ListAccountsParams{
+		Limit:  int32(req.PageSize),
+		Offset: (int32(req.PageID) - 1) * int32(req.PageSize),
+	}
+	account, err := s.accountRepository.Main.ListAccounts(ctx, arg)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errors.ErrorResponse(err))
