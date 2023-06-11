@@ -1,6 +1,6 @@
 package app.dataservice.model;
 
-public class ContentType {
+public class ContentType extends BaseEntity {
     private String name;
 
     public ContentType() {

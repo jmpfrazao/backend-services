@@ -1,6 +1,6 @@
 package app.dataservice.model;
 
-public class Content {
+public class Content extends BaseEntity{
     private Long id;
     private ContentType contentType;
     private User user;
