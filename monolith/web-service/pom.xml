@@ -3,15 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>app</groupId>
 		<artifactId>monolith</artifactId>
+		<groupId>app</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-
-	<name>web-service</name>
+	
 	<artifactId>web-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<description>Demo project for Spring Boot</description>
+
 
 	<properties>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
@@ -19,8 +17,8 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>app</groupId>
 			<artifactId>data-service</artifactId>
+			<groupId>app</groupId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
