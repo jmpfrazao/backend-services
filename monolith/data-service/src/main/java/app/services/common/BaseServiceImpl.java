@@ -16,6 +16,10 @@ public abstract class BaseServiceImpl<T, ID> {
         return map.get(id);
     }
 
+    // for mongo https://github.com/springframeworkguru/spring5-mongo-recipe-app/tree/integration-testing-mongodb
+
+    // https://www.udemy.com/course/spring-framework-5-beginner-to-guru/learn/lecture/11235012#overview
+    // for id increment
     public  T save(ID id, T object) {
         map.put(id, object);
         return object;

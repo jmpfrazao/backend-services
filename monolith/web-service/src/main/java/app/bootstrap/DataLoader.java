@@ -14,7 +14,6 @@ public class DataLoader implements CommandLineRunner {
     private final CustomerServiceImpl customerService;
     private final SalesManagerServiceImpl salesManagerService;
 
-
     public DataLoader(CustomerServiceImpl customerService, SalesManagerServiceImpl salesManagerService) {
         this.customerService = customerService;
         this.salesManagerService = salesManagerService;
